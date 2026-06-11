@@ -3,26 +3,26 @@ use std::collections::HashMap;
 
 
 
-struct Response{
+pub struct Response{
     status: Status,
     headers: HashMap<String, String>,
     body: String
 }
 
 impl Response{
-    fn new(status: Status, headers: HashMap<String, String>, body: String) -> Self{
+    pub fn new(status: Status, headers: HashMap<String, String>, body: String) -> Self{
         Self { status, headers, body }
     }
 }
 
-struct Status{
+pub struct Status{
     http_version: String,
     status_code: ResponseStatusCode,
     reason_phrase: Option<String>
 }
 
 impl Status{
-    fn new(http_version: &str, status_code: ResponseStatusCode, reason_phrase: Option<&str>) -> Self{
+    pub fn new(http_version: &str, status_code: ResponseStatusCode, reason_phrase: Option<&str>) -> Self{
         Self { http_version: http_version.to_string(), status_code, reason_phrase: {
             if reason_phrase.is_none() {
                 None
@@ -32,7 +32,7 @@ impl Status{
         } }
     }
 
-    fn to_string(&mut self) -> String{
+    pub fn to_string(&mut self) -> String{
         format!("{} {:?} {}", self.http_version, self.status_code as isize, self.reason_phrase.clone().unwrap_or("".to_string()))
     }
 }

@@ -88,6 +88,12 @@ impl TryFrom<&str> for Method{
     }
 }
 
+impl Method{
+    // pub fn to_string() -> String{
+
+    // }
+}
+
 pub struct Request{
     pub method: Method,
     pub path: Option<String>,
@@ -104,4 +110,8 @@ impl Request{
             headers
         }
     }
+
+    // pub fn to_string(&mut self) -> String{
+    //     // format!("{} {} {}", self.method)
+    // }
 }

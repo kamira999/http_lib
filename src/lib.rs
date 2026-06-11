@@ -11,8 +11,10 @@ mod tests {
     //     assert_eq!(result, 4);
     // }
 
-    fn test_req(){
-        let method = req::Method::try_from("GET");
-        // let req = req::Request::new();
+    fn test_req() -> anyhow::Result<()>{
+        let method = req::Method::try_from("GET")?;
+        // println!("{:?}");
+        assert_eq!(format!("{:?}", method), "GET");
+        Ok(())
     }
 }

@@ -70,7 +70,7 @@ pub enum Method{
 impl TryFrom<&str> for Method{
     type Error = anyhow::Error;
 
-    pub fn try_from(value: &str) -> Result<Self, Self::Error> {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
         let value = value.trim();
 
         match value {

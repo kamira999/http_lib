@@ -88,10 +88,10 @@ impl TryFrom<&str> for Method{
     }
 }
 
-impl Method{
-    // pub fn to_string() -> String{
-
-    // }
+impl Method {
+    pub fn to_string(&mut self) -> String{
+        return format!("{:?}", self)
+    }
 }
 
 pub struct Request{
@@ -111,7 +111,7 @@ impl Request{
         }
     }
 
-    // pub fn to_string(&mut self) -> String{
-    //     // format!("{} {} {}", self.method)
-    // }
+    pub fn to_string(&mut self) -> String{
+        format!("{:?} {} {}", self.method, self.path.clone().unwrap_or("".to_string()), self.http_version)
+    }
 }

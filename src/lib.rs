@@ -22,8 +22,12 @@ mod tests {
 
         let path = "/";
 
-        let mut request = req::Request::new(method, Some(path.to_string()), http_version.to_string(), HashMap::new());
-        assert_eq!("GET / HTTP/1.1".to_string(), request.to_string());
+        let mut headers: HashMap<String, String> = HashMap::new();
+        headers.insert("Host:".to_string(), "google.com".to_string());
+        headers.insert("Accept:".to_string(), "*/*".to_string());
+
+        let mut request = req::Request::new(method, Some(path.to_string()), http_version.to_string(), headers);
+        assert_eq!("GET / HTTP/1.1\r\nHost: google.com\nAccept: */*\r\n".to_string(), request.to_string());
         Ok(())
     }
 }

@@ -2,7 +2,7 @@
 
 use anyhow;
 
-use std::collections::{self, HashMap};
+use std::collections::{HashMap};
 
 
 
@@ -112,6 +112,25 @@ impl Request{
     }
 
     pub fn to_string(&mut self) -> String{
-        format!("{:?} {} {}", self.method, self.path.clone().unwrap_or("".to_string()), self.http_version)
+        format!("{:?} {} {}\r\n{}", self.method, self.path.clone().unwrap_or("".to_string()), self.http_version, self.get_headers())
+    }
+
+    pub fn get_headers(&self) -> String{
+        let mut str = String::new();
+        // let n = 1;
+        let mut headers = self.headers.clone().into_iter().peekable();
+        
+        while let Some((k,v)) = headers.next(){
+            if headers.peek().is_none(){
+
+                str.push_str(k.as_str());
+                str.push_str(format!(" {v}\r\n").as_str());
+            }else{
+                str.push_str(k.as_str());
+                str.push_str(format!(" {v}\n").as_str());
+            }
+        } 
+
+        str
     }
 }

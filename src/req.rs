@@ -6,56 +6,12 @@ use std::collections::{HashMap};
 
 
 
-pub fn parse_request(data: String) -> anyhow::Result<Request>{
-   
-
-    // let mut buf = vec![0u8; 1024];
-
-    // socket.try_read(&mut buf)?;
-
-    
-
-    let mut parts = data.split_whitespace();
 
 
-    let method: Method = parts
-        .next()
-        .ok_or(anyhow::anyhow!("No fucking method in request??? req:{}", data))?
-        .try_into()?;
 
-    let path: String = parts
-        .next()
-        .ok_or(anyhow::anyhow!("THERWS NO FUHCKING PATH IN THE REQUEST:{}", data))?
-        .try_into()?;
-
-    let http_version = parts
-        .next()
-        .ok_or(anyhow::anyhow!("THERS NO FUCKING HTTP VERSION req:{}", data))?;
-
-    
-    let mut parts = data.split("\r\n");
-    parts.next(); //Throw away first part bc its already been parsed
-
-    let mut headers: HashMap<String, String> = HashMap::new();
-
-    loop {
-        let (k, v): (String, String) = match parts.next(){
-            Some(str) => {
-                let mut str = str.split(':');
-                (str.next().unwrap().to_string(), str.next().unwrap().to_string())
-            },
-            None => break,
-        };
-
-        headers.insert(k, v);
-    }
-
-    let req = Request::new(method, Some(path), http_version.to_string(), headers);
-    Ok(req)
-}
-
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy, Default)]
 pub enum Method{
+    #[default]
     GET,
     HEAD,
     POST,
@@ -71,9 +27,9 @@ impl TryFrom<&str> for Method{
     type Error = anyhow::Error;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let value = value.trim();
+        let value = value.to_uppercase();
 
-        match value {
+        match value.trim() {
             "GET" => Ok(Method::GET),
             "HEAD" => Ok(Method::HEAD),
             "POST" => Ok(Method::POST),
@@ -94,6 +50,7 @@ impl Method {
     }
 }
 
+#[derive(Debug, PartialEq, Clone, Default)]
 pub struct Request{
     pub method: Method,
     pub path: Option<String>,
@@ -117,7 +74,7 @@ impl Request{
 
     pub fn get_headers(&self) -> String{
         let mut str = String::new();
-        // let n = 1;
+       
         let mut headers = self.headers.clone().into_iter().peekable();
         
         while let Some((k,v)) = headers.next(){
@@ -132,5 +89,46 @@ impl Request{
         } 
 
         str
+    }
+
+    pub fn parse(data: String) -> anyhow::Result<Request>{
+
+        let mut parts = data.split_whitespace();
+
+
+        let method: Method = parts
+            .next()
+            .ok_or(anyhow::anyhow!("No fucking method in request??? req:{}", data))?
+            .try_into()?;
+
+        let path: String = parts
+            .next()
+            .ok_or(anyhow::anyhow!("THERWS NO FUHCKING PATH IN THE REQUEST:{}", data))?
+            .try_into()?;
+
+        let http_version = parts
+            .next()
+            .ok_or(anyhow::anyhow!("THERS NO FUCKING HTTP VERSION req:{}", data))?;
+
+
+        let mut parts = data.split("\r\n");
+        parts.next(); //Throw away first part bc its already been parsed
+
+        let mut headers: HashMap<String, String> = HashMap::new();
+
+        loop {
+            let (k, v): (String, String) = match parts.next(){
+                Some(str) => {
+                    let mut str = str.split(':');
+                    (str.next().unwrap().to_string(), str.next().unwrap().to_string())
+                },
+                None => break,
+            };
+
+            headers.insert(k, v);
+        }
+
+        let req = Request::new(method, Some(path), http_version.to_string(), headers);
+        Ok(req)
     }
 }
